@@ -1,0 +1,5 @@
+. ~/ros2_foxy/ros2-linux/setup.bash
+source /opt/ros/foxy/setup.bash 
+colcon build
+. install/setup.sh
+ros2 run world_model WorldModel

@@ -1,0 +1,16 @@
+. ~/ros2_foxy/ros2-linux/setup.bash
+source /opt/ros/foxy/setup.bash 
+. install/setup.sh
+
+ros2 run testerwm Tester
+ros2 run world_model WorldModel
+ros2 run fake_actuator FakeSubscriber
+ros2 run script_gen ScriptGenExample
+
+launch simulator
+gazebo teo_world.world --verbose
+
+message for script generation
+ros2 topic pub --once /GenIn teo_messages/msg/GenCmd "{targetid: "ScriptGenExample", cmd: 65, jsonmsg: ""}"
+ros2 topic pub --once /GenIn teo_messages/msg/GenCmd "{targetid: "ScriptGenExample", cmd: 71, jsonmsg: ""}"
+ros2 topic pub --once /GenIn teo_messages/msg/GenCmd "{targetid: "ScriptGenExample", cmd: 83, jsonmsg: ""}"
