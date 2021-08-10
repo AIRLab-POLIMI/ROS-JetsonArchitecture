@@ -1,0 +1,2 @@
+uint32 permanencetime
+uint32 appearanceon
