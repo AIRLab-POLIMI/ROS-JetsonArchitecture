@@ -1,0 +1,51 @@
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+project(teo_ws)
+
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # we dont use add_compile_options with pedantic in message packages
+  # because the Python C extensions dont comply with it
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-inconsistent-missing-override")
+endif()
+
+# Find Gazebo
+find_package(gazebo REQUIRED)
+include_directories(${GAZEBO_INCLUDE_DIRS})
+link_directories(${GAZEBO_LIBRARY_DIRS})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
+
+# Ros2
+find_package(gazebo_ros REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+
+option(ENABLE_PROFILER "Enable Ignition Profiler" FALSE)
+if(ENABLE_PROFILER)
+  find_package(ignition-common3 QUIET COMPONENTS profiler)
+  if(ignition-common3_FOUND)
+    add_definitions("-DIGN_PROFILER_ENABLE=1" "-DIGN_PROFILER_REMOTERY=1")
+    message(STATUS "Profiler is active")
+  else()
+    message(WARNING "Can't find Ignition common3. Profiler will not be actived")
+    add_definitions("-DIGN_PROFILER_ENABLE=0" "-DIGN_PROFILER_REMOTERY=0")
+  endif()
+endif()
+
+# Teo_Audio_Control
+add_library(Teo_Audio_Control SHARED Teo_Audio_Control.cc)
+target_link_libraries(Teo_Audio_Control ${GAZEBO_LIBRARIES} pthread)
+target_include_directories(Teo_Audio_Control PUBLIC include)
+ament_target_dependencies(Teo_Audio_Control
+  "gazebo"
+  "gazebo_ros"
+  "rclcpp"
+  "std_msgs"
+)
+ament_export_libraries(gazebo_ros_joint_state_publisher)
+if(ENABLE_PROFILER)
+  target_include_directories(gazebo_ros_joint_state_publisher PUBLIC ${ignition-common3_INCLUDE_DIRS})
+  target_link_libraries(gazebo_ros_joint_state_publisher ${ignition-common3_LIBRARIES})
+endif()

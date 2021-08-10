@@ -1,0 +1,10 @@
+Message Should Be In The Form:
+
+<std_msgs::msg::String>
+"CMD@trackpath/trackname.format@startingtime"
+
+CMD can be:
+	"New" - It loads the new passed track, resetting the previous one.
+	"Pause" - It pauses the execution of the current track. Trackpath can be omitted.
+	"Play" - It resumes the execution of the current track. Trackpath can be omitted.
+	"Stop" - It blocks the execution of the current track. Trackpath can be omitted.
